@@ -4,38 +4,111 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste de pokemons</title>
+    <title>Pokemons</title>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">APP</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        
-             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <a class="nav-link" href="#">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Favorites</a>
+                <!--<button type="button" class="btn btn-secondary" data-toggle="popover" data-placement="bottom"
+                data-content="coucou rep steup">
+                  My favorites list
+                </button>-->
+                <a class="nav-link" href="#">My favorites list</a>         
             </li>
           </ul>
           
         </div>
-      </nav>
-      
-      
+    </nav>
+      <div class="container d-flex p-2 justify-content-center" >
+        <form class="form-inline my-2 my-lg-0" id="main" v-cloak>
+            <div class="justify-content-center d-flex flex-column">
+                <div class="input-group input-group-lg m-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Search</span>
+                    </div>
+                    <input type="text" v-model="searchString" placeholder="Enter your search terms" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+                </div>
+            
+            
+                <div class="card-group d-flex justify-content-center">
+                    <div v-for="pokemon in filteredPokemons">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{pokemon.name}}</h5>
+                                <p class="card-title">{{pokemon.url}}</p>
+                                <a href="#" class="btn btn-primary">Show details</a>
+                                <a href="#" class="btn btn-primary">Add to favorites</a>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
 
+        </form>
+    </div>
+
+      
 </body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+</script>
+<script>
+    
 
+    var pokemons = new Vue({
+        el: '#main',
+        data: {
+            pokemons: [],
+            searchString: "",
+        },
+        beforeCreate() {
+            axios
+                .get('https://pokeapi.co/api/v2/pokemon?limit=165')
+                .then(res => {
+                    this.pokemons = res.data.results
+                    console.log(res.data.results)
+                })
+        },
+        computed: {
+            filteredPokemons: function () {
+                var pokemons_array = this.pokemons,
+                    searchString = this.searchString;
 
+                if(!searchString){
+                    return pokemons_array;
+                }
+
+                searchString = searchString.trim().toLowerCase();
+
+                pokemons_array = pokemons_array.filter(function(item){
+                    if(item.name.toLowerCase().indexOf(searchString) !== -1){
+                        return item;
+                    }
+                })
+
+                return pokemons_array;
+            }
+        },
+    });
 </script>
 </html>
