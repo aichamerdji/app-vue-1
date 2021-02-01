@@ -81,7 +81,7 @@
         },
         beforeCreate() {
             axios
-                .get('https://pokeapi.co/api/v2/pokemon?i='+id)
+                .get('https://pokeapi.co/api/v2/pokemon?limit=165')
                 .then(res => {
                     this.pokemons = res.data.results[0]
                     console.log(res.data.results[0])
