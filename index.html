@@ -46,18 +46,40 @@
             <div class="card-group d-flex justify-content-center">
                 <div v-for="pokemon in filteredPokemons">
                     <div class="card" style="width: 18rem;">
-                        <img v-bind:src="pokemon.front_default" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">{{pokemon.name}}</h5>
 
-                            <a href="#" class="btn btn-primary">Show details</a>
+                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" v-on:click="toggleDetails(pokemon)">Show details</a>
                             <a href="#" class="btn btn-primary">Add in my Team</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+    <!--MODAL SHOW DETAILS COKTAILS-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">{{pokemons_details.name}}</h5>
+            <img v-bind:src="pokemons_images" class="card-img-top" alt="...">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <h3>Details :</h3>
+                <p>Poids : {{pokemons_details.weight}}</p>
+                <p>Taille : {{pokemons_details.height}}</p>
+                <p>Exp : {{pokemons_details.base_experience}}</p>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
     </form>
 </div>
 
@@ -69,6 +91,8 @@
     $(function () {
         $('[data-toggle="popover"]').popover()
     })
+
+    $().button('toggle')
 </script>
 <script>
 
@@ -78,6 +102,8 @@
         data: {
             pokemons: [],
             searchString: "",
+            pokemons_details: [],
+            pokemons_images: [],
         },
         beforeCreate() {
             axios
@@ -107,6 +133,20 @@
                 return pokemons_array;
             }
         },
+        methods:{
+            toggleDetails: function(p){
+                var name = p.name;
+                console.log(name);
+                axios
+                    .get('https://pokeapi.co/api/v2/pokemon/' + name + '/')
+                    .then(res => {
+                        this.pokemons_details = res.data
+                        this.pokemons_images = res.data['sprites']['front_default']
+                        console.log(p.name)
+                        console.log(res.data)
+                })
+            },
+        }
     });
 </script>
 </html>
